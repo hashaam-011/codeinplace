@@ -61,7 +61,7 @@ function renderGoals() {
     const button = document.createElement("button");
     button.className = `goal-button ${goal.id === selectedGoal ? "active" : ""}`;
     button.type = "button";
-    button.innerHTML = `<span>${goal.label}</span><strong>${goal.mark}</strong>`;
+    button.textContent = goal.label;
     button.addEventListener("click", async () => {
       selectedGoal = goal.id;
       renderGoals();
@@ -250,8 +250,7 @@ function renderCalendar(data) {
     cell.className = `calendar-day ${day.outside ? "outside" : ""} ${day.today ? "today" : ""} ${total ? "active" : ""}`;
     cell.innerHTML = `
       <strong>${day.day}</strong>
-      <span>${day.completed || 0} done</span>
-      <small>${day.skipped || 0} skip</small>
+      ${total ? `<span>${day.completed || 0} done</span><small>${day.skipped || 0} skipped</small>` : ""}
     `;
     grid.appendChild(cell);
   });
@@ -276,6 +275,7 @@ function renderHabitLibrary(habits) {
   }
 
   library.innerHTML = habits
+    .slice(0, 6)
     .map(
       (habit) => `
         <article class="habit-card">

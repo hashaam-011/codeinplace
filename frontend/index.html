@@ -8,43 +8,48 @@
   </head>
   <body>
     <main class="app-shell">
-      <section class="hero">
+      <header class="topbar">
         <div>
-          <p class="eyebrow">For busy professionals</p>
-          <h1>Micro Habit Coach</h1>
-          <p class="summary">Pick one goal, get one tiny habit, and build momentum without turning self-improvement into another full-time job.</p>
+          <p class="eyebrow">Micro Habit Coach</p>
+          <h1>One small win for today.</h1>
         </div>
         <div class="status-pill" id="databaseStatus">Connecting...</div>
-      </section>
+      </header>
 
-      <section class="workspace">
-        <aside class="panel goals-panel" aria-label="Goal selection">
-          <h2>Today's Goal</h2>
+      <section class="today-grid">
+        <aside class="panel focus-panel" aria-label="Goal selection">
+          <div class="section-heading">
+            <p class="eyebrow">Step 1</p>
+            <h2>Choose a focus</h2>
+          </div>
           <div class="goal-grid" id="goalGrid"></div>
         </aside>
 
         <section class="panel habit-panel">
-          <div class="panel-heading">
+          <div class="habit-topline">
             <div>
-              <p class="eyebrow">Recommended tiny action</p>
+              <p class="eyebrow">Step 2</p>
               <h2 id="habitTitle">Loading habit...</h2>
             </div>
             <span class="badge" id="habitMeta">-- min</span>
           </div>
           <p class="habit-description" id="habitDescription"></p>
-          <div class="habit-actions">
-            <button class="primary" id="completeButton">Mark Complete</button>
-            <button class="secondary" id="skipButton">Skip Today</button>
-            <button class="ghost" id="refreshButton">New Suggestion</button>
-          </div>
           <label class="note-field">
-            <span>Optional note</span>
-            <input id="noteInput" type="text" placeholder="What helped or got in the way?">
+            <span>Note</span>
+            <input id="noteInput" type="text" placeholder="Optional reflection">
           </label>
+          <div class="habit-actions">
+            <button class="primary" id="completeButton">Complete</button>
+            <button class="secondary" id="skipButton">Skip</button>
+            <button class="ghost" id="refreshButton">New Habit</button>
+          </div>
         </section>
 
-        <section class="panel progress-panel">
-          <h2>Progress</h2>
+        <aside class="panel score-panel">
+          <div class="section-heading">
+            <p class="eyebrow">Today</p>
+            <h2>Your progress</h2>
+          </div>
           <div class="metric-row">
             <div>
               <strong id="streakValue">0</strong>
@@ -59,14 +64,44 @@
               <span>check-ins</span>
             </div>
           </div>
+        </aside>
+      </section>
+
+      <section class="insights-grid">
+        <section class="panel progress-panel">
+          <div class="section-heading">
+            <p class="eyebrow">Last 7 days</p>
+            <h2>Weekly rhythm</h2>
+          </div>
           <div class="week-chart" id="weekChart"></div>
           <div class="goal-breakdown" id="goalBreakdown"></div>
         </section>
+
+        <section class="panel calendar-panel">
+          <div class="calendar-heading">
+            <button class="icon-button" id="prevMonthButton" type="button" aria-label="Previous month">&lt;</button>
+            <h2 id="calendarTitle">Calendar</h2>
+            <button class="icon-button" id="nextMonthButton" type="button" aria-label="Next month">&gt;</button>
+          </div>
+          <div class="calendar-weekdays">
+            <span>Mon</span>
+            <span>Tue</span>
+            <span>Wed</span>
+            <span>Thu</span>
+            <span>Fri</span>
+            <span>Sat</span>
+            <span>Sun</span>
+          </div>
+          <div class="calendar-grid" id="calendarGrid"></div>
+        </section>
       </section>
 
-      <section class="lower-grid">
+      <section class="manage-grid">
         <section class="panel">
-          <h2>Add Your Own Habit</h2>
+          <div class="section-heading">
+            <p class="eyebrow">Custom</p>
+            <h2>Add a habit</h2>
+          </div>
           <form id="habitForm" class="habit-form">
             <div class="form-row">
               <label>
@@ -86,7 +121,7 @@
             </div>
             <label>
               <span>Title</span>
-              <input id="customTitle" type="text" placeholder="Example: Five-minute inbox clean-up" required>
+              <input id="customTitle" type="text" placeholder="Five-minute inbox clean-up" required>
             </label>
             <label>
               <span>Description</span>
@@ -97,41 +132,24 @@
         </section>
 
         <section class="panel">
-          <h2>Recent Check-ins</h2>
+          <div class="section-heading">
+            <p class="eyebrow">Log</p>
+            <h2>Recent check-ins</h2>
+          </div>
           <div class="recent-list" id="recentList"></div>
         </section>
       </section>
 
-      <section class="dashboard-grid">
-        <section class="panel calendar-panel">
-          <div class="calendar-heading">
-            <button class="icon-button" id="prevMonthButton" type="button" aria-label="Previous month">&lt;</button>
-            <h2 id="calendarTitle">Calendar</h2>
-            <button class="icon-button" id="nextMonthButton" type="button" aria-label="Next month">&gt;</button>
+      <section class="panel library-panel">
+        <div class="library-header">
+          <div>
+            <p class="eyebrow">Habit ideas</p>
+            <h2>Saved actions</h2>
           </div>
-          <div class="calendar-weekdays">
-            <span>Mon</span>
-            <span>Tue</span>
-            <span>Wed</span>
-            <span>Thu</span>
-            <span>Fri</span>
-            <span>Sat</span>
-            <span>Sun</span>
-          </div>
-          <div class="calendar-grid" id="calendarGrid"></div>
-        </section>
-
-        <section class="panel library-panel">
-          <div class="panel-heading">
-            <div>
-              <p class="eyebrow">Habit library</p>
-              <h2>Available Actions</h2>
-            </div>
-            <span class="badge" id="habitCount">0 habits</span>
-          </div>
-          <div class="library-tabs" id="libraryTabs"></div>
-          <div class="habit-library" id="habitLibrary"></div>
-        </section>
+          <span class="badge" id="habitCount">0 habits</span>
+        </div>
+        <div class="library-tabs" id="libraryTabs"></div>
+        <div class="habit-library" id="habitLibrary"></div>
       </section>
     </main>
 
