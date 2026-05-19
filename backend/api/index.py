@@ -45,6 +45,11 @@ class handler(BaseHTTPRequestHandler):
         if path == "/api/progress":
             return self.send_json(DB.progress_summary())
 
+        if path == "/api/calendar":
+            year = query.get("year", [None])[0]
+            month = query.get("month", [None])[0]
+            return self.send_json(DB.calendar_summary(year, month))
+
         return self.send_json({"error": "Endpoint not found."}, status=404)
 
     def do_POST(self):

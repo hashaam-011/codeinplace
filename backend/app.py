@@ -46,6 +46,11 @@ class HabitCoachHandler(SimpleHTTPRequestHandler):
         if path == "/api/progress":
             return self.send_json(DB.progress_summary())
 
+        if path == "/api/calendar":
+            year = query.get("year", [None])[0]
+            month = query.get("month", [None])[0]
+            return self.send_json(DB.calendar_summary(year, month))
+
         return super().do_GET()
 
     def do_POST(self):

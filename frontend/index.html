@@ -60,6 +60,7 @@
             </div>
           </div>
           <div class="week-chart" id="weekChart"></div>
+          <div class="goal-breakdown" id="goalBreakdown"></div>
         </section>
       </section>
 
@@ -98,6 +99,38 @@
         <section class="panel">
           <h2>Recent Check-ins</h2>
           <div class="recent-list" id="recentList"></div>
+        </section>
+      </section>
+
+      <section class="dashboard-grid">
+        <section class="panel calendar-panel">
+          <div class="calendar-heading">
+            <button class="icon-button" id="prevMonthButton" type="button" aria-label="Previous month">&lt;</button>
+            <h2 id="calendarTitle">Calendar</h2>
+            <button class="icon-button" id="nextMonthButton" type="button" aria-label="Next month">&gt;</button>
+          </div>
+          <div class="calendar-weekdays">
+            <span>Mon</span>
+            <span>Tue</span>
+            <span>Wed</span>
+            <span>Thu</span>
+            <span>Fri</span>
+            <span>Sat</span>
+            <span>Sun</span>
+          </div>
+          <div class="calendar-grid" id="calendarGrid"></div>
+        </section>
+
+        <section class="panel library-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Habit library</p>
+              <h2>Available Actions</h2>
+            </div>
+            <span class="badge" id="habitCount">0 habits</span>
+          </div>
+          <div class="library-tabs" id="libraryTabs"></div>
+          <div class="habit-library" id="habitLibrary"></div>
         </section>
       </section>
     </main>

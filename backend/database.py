@@ -1,6 +1,7 @@
 import os
 import random
 import sqlite3
+from calendar import monthrange
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
@@ -20,8 +21,10 @@ class Database:
         if self.database_url:
             try:
                 import psycopg
+                from psycopg.rows import dict_row
 
                 self.psycopg = psycopg
+                self.dict_row = dict_row
                 self.driver = "postgres"
             except ImportError:
                 print("DATABASE_URL is set, but psycopg is not installed. Using SQLite.")
@@ -31,7 +34,7 @@ class Database:
 
     def connect(self):
         if self.driver == "postgres":
-            return self.psycopg.connect(self.database_url)
+            return self.psycopg.connect(self.database_url, row_factory=self.dict_row)
         conn = sqlite3.connect(SQLITE_PATH)
         conn.row_factory = sqlite3.Row
         return conn
@@ -103,8 +106,8 @@ class Database:
     def seed_defaults(self):
         with self.connect() as conn:
             cur = conn.cursor()
-            cur.execute("SELECT COUNT(*) FROM habits")
-            count = cur.fetchone()[0]
+            cur.execute("SELECT COUNT(*) AS total FROM habits")
+            count = self.scalar(cur.fetchone(), "total")
             if count:
                 return
 
@@ -130,6 +133,11 @@ class Database:
 
     def rows_to_dicts(self, rows):
         return [dict(row) for row in rows]
+
+    def scalar(self, row, key):
+        if isinstance(row, dict):
+            return row[key]
+        return row[0]
 
     def list_habits(self, goal=None):
         p = self.placeholder()
@@ -263,7 +271,84 @@ class Database:
             "streak": streak,
             "week": week,
             "recent": checkins[:8],
+            "goal_totals": self.goal_totals(30),
             "database": self.driver,
+        }
+
+    def goal_totals(self, days=30):
+        p = self.placeholder()
+        start = (date.today() - timedelta(days=days - 1)).isoformat()
+        with self.connect() as conn:
+            cur = conn.cursor()
+            cur.execute(
+                f"""
+                SELECT goal,
+                    SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) AS completed,
+                    COUNT(*) AS total
+                FROM checkins
+                WHERE checkin_date >= {p}
+                GROUP BY goal
+                ORDER BY completed DESC, total DESC, goal
+                """,
+                (start,),
+            )
+            return self.rows_to_dicts(cur.fetchall())
+
+    def calendar_summary(self, year=None, month=None):
+        today = date.today()
+        year = int(year or today.year)
+        month = int(month or today.month)
+        first = date(year, month, 1)
+        last_day = monthrange(year, month)[1]
+        after_last = date(year + (1 if month == 12 else 0), 1 if month == 12 else month + 1, 1)
+        p = self.placeholder()
+
+        with self.connect() as conn:
+            cur = conn.cursor()
+            cur.execute(
+                f"""
+                SELECT checkin_date, status, goal
+                FROM checkins
+                WHERE checkin_date >= {p} AND checkin_date < {p}
+                ORDER BY checkin_date
+                """,
+                (first.isoformat(), after_last.isoformat()),
+            )
+            rows = self.rows_to_dicts(cur.fetchall())
+
+        by_day = {}
+        for row in rows:
+            key = str(row["checkin_date"])
+            by_day.setdefault(key, {"completed": 0, "skipped": 0, "goals": {}})
+            by_day[key][row["status"]] += 1
+            by_day[key]["goals"][row["goal"]] = by_day[key]["goals"].get(row["goal"], 0) + 1
+
+        leading_blanks = first.weekday()
+        days = [{"date": None, "day": "", "outside": True} for _ in range(leading_blanks)]
+
+        for day_number in range(1, last_day + 1):
+            current = date(year, month, day_number)
+            iso = current.isoformat()
+            data = by_day.get(iso, {"completed": 0, "skipped": 0, "goals": {}})
+            days.append(
+                {
+                    "date": iso,
+                    "day": day_number,
+                    "today": iso == today.isoformat(),
+                    "completed": data["completed"],
+                    "skipped": data["skipped"],
+                    "goals": data["goals"],
+                }
+            )
+
+        while len(days) % 7:
+            days.append({"date": None, "day": "", "outside": True})
+
+        return {
+            "year": year,
+            "month": month,
+            "month_label": first.strftime("%B %Y"),
+            "days": days,
         }
 
     def calculate_streak(self, completed_dates):
