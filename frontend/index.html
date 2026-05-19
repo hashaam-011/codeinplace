@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Micro Habit Coach</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">For busy professionals</p>
+          <h1>Micro Habit Coach</h1>
+          <p class="summary">Pick one goal, get one tiny habit, and build momentum without turning self-improvement into another full-time job.</p>
+        </div>
+        <div class="status-pill" id="databaseStatus">Connecting...</div>
+      </section>
+
+      <section class="workspace">
+        <aside class="panel goals-panel" aria-label="Goal selection">
+          <h2>Today's Goal</h2>
+          <div class="goal-grid" id="goalGrid"></div>
+        </aside>
+
+        <section class="panel habit-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Recommended tiny action</p>
+              <h2 id="habitTitle">Loading habit...</h2>
+            </div>
+            <span class="badge" id="habitMeta">-- min</span>
+          </div>
+          <p class="habit-description" id="habitDescription"></p>
+          <div class="habit-actions">
+            <button class="primary" id="completeButton">Mark Complete</button>
+            <button class="secondary" id="skipButton">Skip Today</button>
+            <button class="ghost" id="refreshButton">New Suggestion</button>
+          </div>
+          <label class="note-field">
+            <span>Optional note</span>
+            <input id="noteInput" type="text" placeholder="What helped or got in the way?">
+          </label>
+        </section>
+
+        <section class="panel progress-panel">
+          <h2>Progress</h2>
+          <div class="metric-row">
+            <div>
+              <strong id="streakValue">0</strong>
+              <span>day streak</span>
+            </div>
+            <div>
+              <strong id="rateValue">0%</strong>
+              <span>completion</span>
+            </div>
+            <div>
+              <strong id="totalValue">0</strong>
+              <span>check-ins</span>
+            </div>
+          </div>
+          <div class="week-chart" id="weekChart"></div>
+        </section>
+      </section>
+
+      <section class="lower-grid">
+        <section class="panel">
+          <h2>Add Your Own Habit</h2>
+          <form id="habitForm" class="habit-form">
+            <div class="form-row">
+              <label>
+                <span>Goal</span>
+                <select id="customGoal">
+                  <option value="focus">Focus</option>
+                  <option value="energy">Energy</option>
+                  <option value="stress">Stress</option>
+                  <option value="learning">Learning</option>
+                  <option value="wellbeing">Wellbeing</option>
+                </select>
+              </label>
+              <label>
+                <span>Minutes</span>
+                <input id="customMinutes" type="number" min="1" max="120" value="5">
+              </label>
+            </div>
+            <label>
+              <span>Title</span>
+              <input id="customTitle" type="text" placeholder="Example: Five-minute inbox clean-up" required>
+            </label>
+            <label>
+              <span>Description</span>
+              <input id="customDescription" type="text" placeholder="Describe the tiny action" required>
+            </label>
+            <button class="primary" type="submit">Save Habit</button>
+          </form>
+        </section>
+
+        <section class="panel">
+          <h2>Recent Check-ins</h2>
+          <div class="recent-list" id="recentList"></div>
+        </section>
+      </section>
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="config.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
