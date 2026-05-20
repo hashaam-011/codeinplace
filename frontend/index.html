@@ -3,17 +3,27 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#070d0b">
     <title>Micro Habit Coach</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
     <main class="app-shell">
       <header class="topbar">
-        <div>
+        <div class="topbar-copy">
           <p class="eyebrow">Micro Habit Coach</p>
-          <h1>One small win for today.</h1>
+          <h1 id="greeting">One small win.</h1>
+          <p class="topbar-tagline">Build small. Stay consistent. Win daily.</p>
         </div>
-        <div class="status-pill" id="databaseStatus">Connecting...</div>
+        <div class="topbar-ornament" aria-hidden="true">
+          <span class="orb orb-1"></span>
+          <span class="orb orb-2"></span>
+        </div>
+        <!-- kept in DOM so JS can write to it without throwing -->
+        <div id="databaseStatus" aria-hidden="true" style="display:none">Connecting...</div>
       </header>
 
       <section class="today-grid">
@@ -39,9 +49,9 @@
             <input id="noteInput" type="text" placeholder="Optional reflection">
           </label>
           <div class="habit-actions">
-            <button class="primary" id="completeButton">Complete</button>
-            <button class="secondary" id="skipButton">Skip</button>
-            <button class="ghost" id="refreshButton">New Habit</button>
+            <button class="primary" id="completeButton">&#10003; Complete</button>
+            <button class="secondary" id="skipButton">Skip today</button>
+            <button class="ghost" id="refreshButton">&#8635; New habit</button>
           </div>
         </section>
 
@@ -51,12 +61,19 @@
             <h2>Your progress</h2>
           </div>
           <div class="metric-row">
-            <div>
+            <div class="metric-streak">
               <strong id="streakValue">0</strong>
               <span>day streak</span>
+              <span class="streak-flame" id="streakFlame" aria-hidden="true"></span>
             </div>
-            <div>
-              <strong id="rateValue">0%</strong>
+            <div class="metric-rate">
+              <div class="ring-wrap">
+                <svg class="rate-ring" viewBox="0 0 56 56" aria-hidden="true">
+                  <circle class="ring-track" cx="28" cy="28" r="22"/>
+                  <circle class="ring-fill" id="ringFill" cx="28" cy="28" r="22"/>
+                </svg>
+                <strong id="rateValue">0%</strong>
+              </div>
               <span>completion</span>
             </div>
             <div>
@@ -79,18 +96,13 @@
 
         <section class="panel calendar-panel">
           <div class="calendar-heading">
-            <button class="icon-button" id="prevMonthButton" type="button" aria-label="Previous month">&lt;</button>
+            <button class="icon-button" id="prevMonthButton" type="button" aria-label="Previous month">&#8249;</button>
             <h2 id="calendarTitle">Calendar</h2>
-            <button class="icon-button" id="nextMonthButton" type="button" aria-label="Next month">&gt;</button>
+            <button class="icon-button" id="nextMonthButton" type="button" aria-label="Next month">&#8250;</button>
           </div>
           <div class="calendar-weekdays">
-            <span>Mon</span>
-            <span>Tue</span>
-            <span>Wed</span>
-            <span>Thu</span>
-            <span>Fri</span>
-            <span>Sat</span>
-            <span>Sun</span>
+            <span>Mon</span><span>Tue</span><span>Wed</span>
+            <span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
           </div>
           <div class="calendar-grid" id="calendarGrid"></div>
         </section>

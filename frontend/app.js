@@ -6,6 +6,18 @@ const goals = [
   { id: "wellbeing", label: "Wellbeing", mark: "W" },
 ];
 
+function setGreeting() {
+  const h = new Date().getHours();
+  const msg =
+    h < 5  ? "Burning the midnight oil." :
+    h < 12 ? "Good morning." :
+    h < 17 ? "Good afternoon." :
+    h < 21 ? "Good evening." :
+             "Night owl mode.";
+  const el = document.querySelector("#greeting");
+  if (el) el.textContent = msg;
+}
+
 let selectedGoal = "focus";
 let selectedLibraryGoal = "all";
 let currentHabit = null;
@@ -161,6 +173,28 @@ function renderProgress(data) {
   document.querySelector("#streakValue").textContent = data.streak;
   document.querySelector("#rateValue").textContent = `${data.completion_rate}%`;
   document.querySelector("#totalValue").textContent = data.total;
+
+  // Completion ring
+  const ring = document.querySelector("#ringFill");
+  if (ring) {
+    const circ = 2 * Math.PI * 22;
+    ring.style.strokeDashoffset = (circ * (1 - data.completion_rate / 100)).toFixed(2);
+    ring.style.stroke = data.completion_rate >= 80 ? "#ffbf45" : "var(--green)";
+  }
+
+  // Streak flame
+  const streakBox = document.querySelector(".metric-streak");
+  if (streakBox) {
+    const flame = document.querySelector("#streakFlame");
+    if (data.streak >= 3) {
+      streakBox.classList.add("hot");
+      if (flame) flame.textContent = data.streak >= 14 ? "🔥🔥" : "🔥";
+    } else {
+      streakBox.classList.remove("hot");
+      if (flame) flame.textContent = "";
+    }
+  }
+
   renderWeek(data.week || []);
   renderRecent(data.recent || []);
   renderGoalBreakdown(data.goal_totals || []);
@@ -186,7 +220,7 @@ function renderWeek(week) {
 function renderGoalBreakdown(goalTotals) {
   const container = document.querySelector("#goalBreakdown");
   if (!goalTotals.length) {
-    container.innerHTML = `<p class="recent-meta">No goal data yet.</p>`;
+    container.innerHTML = `<p class="empty-state">Complete your first habit to see goal breakdown.</p>`;
     return;
   }
 
@@ -195,7 +229,7 @@ function renderGoalBreakdown(goalTotals) {
     .map((item) => {
       const width = Math.max(8, Math.round((Number(item.completed) / max) * 100));
       return `
-        <div class="goal-meter">
+        <div class="goal-meter" data-goal="${item.goal}">
           <span>${item.goal}</span>
           <div><i style="width:${width}%"></i></div>
           <strong>${item.completed}/${item.total}</strong>
@@ -209,7 +243,7 @@ function renderRecent(recent) {
   const list = document.querySelector("#recentList");
   list.innerHTML = "";
   if (!recent.length) {
-    list.innerHTML = `<p class="recent-meta">No check-ins yet. Complete your first tiny habit to start the log.</p>`;
+    list.innerHTML = `<p class="empty-state">No check-ins yet. Complete your first tiny habit to start the log.</p>`;
     return;
   }
 
@@ -217,12 +251,12 @@ function renderRecent(recent) {
     const row = document.createElement("div");
     row.className = "recent-item";
     row.innerHTML = `
-      <span class="recent-dot ${item.status}"></span>
+      <span class="recent-dot ${item.status}" aria-hidden="true"></span>
       <div>
         <p class="recent-title">${item.habit_title || item.goal}</p>
-        <p class="recent-meta">${item.status} - ${item.checkin_date}</p>
+        <p class="recent-meta">${item.status} · ${item.checkin_date}</p>
       </div>
-      <strong>${item.goal}</strong>
+      <strong class="recent-goal">${item.goal}</strong>
     `;
     list.appendChild(row);
   });
@@ -278,12 +312,12 @@ function renderHabitLibrary(habits) {
     .slice(0, 6)
     .map(
       (habit) => `
-        <article class="habit-card">
+        <article class="habit-card" data-goal="${habit.goal}">
           <div>
             <strong>${habit.title}</strong>
             <p>${habit.description}</p>
           </div>
-          <span>${habit.goal} - ${habit.minutes} min</span>
+          <span>${habit.goal} · ${habit.minutes} min</span>
         </article>
       `,
     )
@@ -333,6 +367,7 @@ document.querySelector("#nextMonthButton").addEventListener("click", async () =>
 });
 
 async function init() {
+  setGreeting();
   renderGoals();
   renderLibraryTabs();
   await Promise.all([loadHealth(), loadTodayHabit(), loadProgress(), loadCalendar(), loadHabitLibrary()]);
